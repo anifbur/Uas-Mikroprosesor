@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>ESP32 Traffic Light Monitor</title>
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      padding: 24px;
+    }
+
+    h2 {
+      margin-bottom: 16px;
+    }
+
+    .card {
+      background: #020617;
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      box-shadow: 0 0 12px rgba(0,0,0,.4);
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: gray;
+    }
+
+    .online { background: #22c55e; }
+    .offline { background: #ef4444; }
+
+    .lamp {
+      display: flex;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .lamp div {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      opacity: 0.2;
+    }
+
+    .red    { background: #dc2626; }
+    .yellow { background: #facc15; }
+    .green  { background: #22c55e; }
+
+    .active {
+      opacity: 1;
+      box-shadow: 0 0 12px currentColor;
+    }
+
+    pre {
+      background: #020617;
+      padding: 12px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>🚦 ESP32 Traffic Light Monitor</h2>
+
+<div class="card">
+  <h3>Koneksi MQTT</h3>
+  <div class="status">
+    <div id="connDot" class="dot offline"></div>
+    <span id="connText">Disconnected</span>
+  </div>
+</div>
+
+<div class="card">
+  <h3>Status Lampu</h3>
+  <div class="lamp">
+    <div id="lampRed" class="red"></div>
+    <div id="lampYellow" class="yellow"></div>
+    <div id="lampGreen" class="green"></div>
+  </div>
+  <p style="margin-top:10px">
+    Mode: <b id="mode">-</b><br>
+    AI Score: <b id="score">-</b><br>
+    Green Time: <b id="greenTime">-</b> ms
+  </p>
+</div>
+
+<div class="card">
+  <h3>Raw JSON</h3>
+  <pre id="raw">waiting data...</pre>
+</div>
+
+<script>
+  // ===== MQTT CONFIG =====
+  const client = mqtt.connect(
+    'wss://df98e8e04d9c43d7a8eb03c565ab847a.s1.eu.hivemq.cloud:8884/mqtt',
+    {
+      protocol: 'wss',
+      username: 'hivemq.webclient.1770388511711',
+      password: 'XHJ$!E8cjf9t*q>G0M3s',
+      reconnectPeriod: 3000
+    }
+  );
+
+  const STATUS_TOPIC = 'iot/esp32/status';
+
+  const connDot  = document.getElementById('connDot');
+  const connText = document.getElementById('connText');
+
+  client.on('connect', () => {
+    connDot.className = 'dot online';
+    connText.innerText = 'Connected';
+    client.subscribe(STATUS_TOPIC);
+  });
+
+  client.on('offline', () => {
+    connDot.className = 'dot offline';
+    connText.innerText = 'Offline';
+  });
+
+  client.on('message', (topic, message) => {
+    if (topic !== STATUS_TOPIC) return;
+
+    const data = JSON.parse(message.toString());
+
+    document.getElementById('mode').innerText = data.mode;
+    document.getElementById('score').innerText = data.score;
+    document.getElementById('greenTime').innerText = data.green_time;
+    document.getElementById('raw').innerText =
+      JSON.stringify(data, null, 2);
+
+    // reset lamp
+    ['lampRed','lampYellow','lampGreen']
+      .forEach(id => document.getElementById(id).classList.remove('active'));
+
+    if (data.light === 'RED')
+      document.getElementById('lampRed').classList.add('active');
+    else if (data.light === 'YELLOW')
+      document.getElementById('lampYellow').classList.add('active');
+    else if (data.light === 'GREEN')
+      document.getElementById('lampGreen').classList.add('active');
+  });
+</script>
+
+</body>
+</html>

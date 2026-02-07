@@ -3,8 +3,10 @@
 Project ini merupakan implementasi sistem **Traffic Light berbasis ESP32** yang berjalan
 secara **real-time**, **offline-capable**, dan terhubung ke jaringan menggunakan **MQTT**.
 Sistem dirancang sesuai konsep **Embedded System modern** dengan pemanfaatan FreeRTOS.
-
----
+ 
+ Anif Burhanudin
+ 23552011075
+ TIF K 23 A
 
 ## ✨ Fitur Utama
 
@@ -24,7 +26,7 @@ Sistem dirancang sesuai konsep **Embedded System modern** dengan pemanfaatan Fre
   - Intensitas lampu yang stabil
 - PWM tetap aktif meskipun sistem **offline**.
 
----c:\Users\jaman\Downloads\carbon.png
+---
 
 ### 💾 EEPROM / Preferences
 - Nilai **AI Score** dan konfigurasi sistem disimpan menggunakan `Preferences`.
@@ -57,8 +59,7 @@ Sistem dirancang sesuai konsep **Embedded System modern** dengan pemanfaatan Fre
 
 ---
 
-## 📌 Catatan
-Project ini dibuat untuk keperluan **pembelajaran Embedded System & IoT**, dengan fokus
-pada manajemen proses, memori, dan komunikasi jaringan secara terstruktur.
+## 📌 Demon
+https://drive.google.com/file/d/1w2v2v8aDSmWA6xTacRh0T5Szs9B4-gX-/view?usp=drive_link
 
 ---
